@@ -5,13 +5,29 @@ function createStore () {
   //3. Listen to changes on the state
   //4. Update the state
 
-  let state = 2;
+  let state;
+  let listeners = [];
 
   const getState = () => state;
 
-  return {
-    getState
+  const subscribe = (listener) => {
+    listeners.push(listener)
   }
-}
 
-console.log(createStore().getState())
+  return {
+    getState,
+    subscribe,
+  }
+
+}
+//console.log(createStore())
+
+const store = createStore();
+
+store.subscribe(() => {
+  console.log("The new state is: ", store.getState());
+})
+
+store.subscribe(() => {
+  console.log("The store changed.");
+})

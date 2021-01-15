@@ -11,7 +11,10 @@ function createStore () {
   const getState = () => state;
 
   const subscribe = (listener) => {
-    listeners.push(listener)
+    listeners.push(listener);
+    return () => {
+      listeners = listeners.filter((l) => l !== listener);
+    }
   }
 
   return {
@@ -27,7 +30,13 @@ const store = createStore();
 store.subscribe(() => {
   console.log("The new state is: ", store.getState());
 })
+//Store.subscribe():
+//It is a function
+//When called, it is passed a single function
+//It returns a function
 
-store.subscribe(() => {
+const unsubscribe = store.subscribe(() => {
   console.log("The store changed.");
-})
+});
+
+unsubscribe();

@@ -86,6 +86,29 @@
         };
       }
 
+      function handleAddGoal(name, cb) {
+        return (dispatch) => {
+          return API.saveGoal(name)
+            .then((goal) => {
+              dispatch(addGoalAction(goal));
+              cb();
+            })
+            .catch(() => {
+              alert("An error occurred. Try again.");
+            });
+        };
+      }
+
+      function handleRemoveGoal(goal) {
+        return (dispatch) => {
+          dispatch(removeGoalAction(goal.id));
+          return API.deleteGoal(goal.id).catch(() => {
+            alert("An error occurred. Try again.");
+            dispatch(addGoalAction(goal));
+          });
+        };
+      }
+
       function todos(state = [], action) {
         switch (action.type) {
           case ADD_TODO:
@@ -167,7 +190,7 @@
         console.groupEnd();
         return result;
       };
-/*
+      /*
       const thunk = (store) => (next) => (action) => {
         if (typeof action === "function") {
           return action(store.dispatch);
@@ -257,22 +280,13 @@
       class Goals extends React.Component {
         addItem = (e) => {
           e.preventDefault();
-          return API.saveGoal(this.input.value)
-            .then((goal) => {
-              this.props.store.dispatch(addGoalAction(goal));
-              this.input.value = "";
-            })
-            .catch(() => {
-              alert("An error occurred. Try again.");
-            });
+          this.props.store.dispatch(
+            handleAddGoal(this.input.value, () => (this.input.value = ""))
+          );
         };
 
         removeItem = (goal) => {
-          this.props.store.dispatch(removeGoalAction(goal.id));
-          return API.deleteGoal(goal.id).catch(() => {
-            alert("An error occurred. Try again.");
-            this.props.store.dispatch(addGoalAction(goal));
-          });
+          this.props.store.dispatch(handleRemoveGoal(goal));
         };
 
         render() {
